@@ -1,3 +1,5 @@
+const Bootcamp =  require('../models/Bootcamp.js');
+
 // description     	Get All Bootcamps
 // route			GET api/v1/bootcamps/
 // Authorisation	No
