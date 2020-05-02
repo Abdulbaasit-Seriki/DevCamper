@@ -25,8 +25,8 @@ const BootCampSchema = new mongoose.Schema({
 	},
 	email: {
 		type: String,
-		match: [/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;/,
-				`Please add a valid email address`]
+		match: [/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+		,`Please add a valid email address`]
 	},
 	address: {
 		type: String,
@@ -52,12 +52,12 @@ const BootCampSchema = new mongoose.Schema({
 		type: [String],
 		required: true,
 		enum: [
-			"Web Devleopment",
-			"Mobile Devleopment",
-			"UI/UX",
-			"Data Science",
-			"Business",
-			"Others"
+			'Web Devleopment',
+			'Mobile Devleopment',
+			'UI/UX',
+			'Data Science',
+			'Business',
+			'Others'
 		]
 	},
 	averageRating: {

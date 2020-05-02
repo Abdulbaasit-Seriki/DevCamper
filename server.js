@@ -2,20 +2,26 @@ const express = require('express');
 const dotenv = require('dotenv');
 const app = express();
 const colors = require('colors');
+const bodyParser = require('body-parser');
 
 // Route Files
 const connectToDB = require('./config/database.js');
 const bootcamps = require('./routes/bootcamps.js');
+const errorHandler = require('./middlewares/error.js');
 
 // Load the configs
 dotenv.config({ path: './config/config.env'} );
 
 // Middlewares
 app.use('/api/v1/bootcamps', bootcamps);
+app.use(errorHandler);
+// Body Parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
 
 const port = process.env.PORT || 5000;
 
-connectToDB();
+connectToDB(); 
 const server = app.listen(port, console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`.white.bold)); 
 
 // Closes the app if any error is encountered (It's serving as a global handler for unhandled errors)
