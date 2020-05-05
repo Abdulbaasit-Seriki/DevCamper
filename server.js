@@ -12,12 +12,12 @@ const errorHandler = require('./middlewares/error.js');
 // Load the configs
 dotenv.config({ path: './config/config.env'} );
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
 // Middlewares
 app.use('/api/v1/bootcamps', bootcamps);
 app.use(errorHandler);
 // Body Parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
 
 const port = process.env.PORT || 5000;
 

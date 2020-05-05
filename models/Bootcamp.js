@@ -36,18 +36,18 @@ const BootCampSchema = new mongoose.Schema({
 	},
 	location: {
 		type: String,
-		enum: [`Point`]
+		enum: [`Point`],
+		coordinates: {
+			type: [Number],
+			index: '2dsphere'
+		},
+		formattedAddress: String,
+		street: String,
+		city: String,
+		state: String,
+		zipcode: String,
+		country: String
 	},
-	coordinates: {
-		type: [Number],
-		index: '2dsphere'
-	},
-	formattedAddress: String,
-	street: String,
-	city: String,
-	state: String,
-	zipcode: String,
-	country: String,
 	careers: {
 		type: [String],
 		required: true,
@@ -101,7 +101,7 @@ BootCampSchema.pre("save", function(next) {
 
 BootCampSchema.pre("save", async function(next) {
 	const loc = await geocoder.geocode(this.address);
-	this.location = {
+	let newlocation = {
 		type: 'Point',
 		coordinates: [loc[0].longitude, loc[0].latitude],
 		formattedAddress: loc[0].formattedAddress,
@@ -111,7 +111,9 @@ BootCampSchema.pre("save", async function(next) {
 		zipcode: loc[0].zipcode,
 		country: loc[0].countryCode
 	};
-
+	const formatlocation = JSON.stringify(newlocation);
+	this.location = JSON.parse(formatlocation.toString("utf8").split("&"));
+	console.log(this.location);
 	// Remove the address field
 	this.address = undefined;
 	next();
