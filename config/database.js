@@ -4,7 +4,7 @@ const connectToDB = async () => {
 	const connection = await mongoose.connect(process.env.DATABASE_URI, {
 		useNewUrlParser: true,
 		useCreateIndex: true,
-		useFindAndModify: true,
+		useFindAndModify: false,
 		useUnifiedTopology: true
 	});
 

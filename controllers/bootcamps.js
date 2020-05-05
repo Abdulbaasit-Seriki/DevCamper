@@ -44,6 +44,8 @@ exports.showBootcamp = asyncErrorHandler (async (req, res, next) => {
 		if (!bootcamp) {
 			return next(new ErrorResponseHandler(`Bootcamp not found with an id of ${req.params.id}`), 404);
 		}
+
+		res.status(200).json({ success: "true", data: bootcamp});
 });
 
 // description     	Update a particular Bootcamp 
@@ -51,8 +53,12 @@ exports.showBootcamp = asyncErrorHandler (async (req, res, next) => {
 // Authorisation	Yes
 exports.updateBootcamp = asyncErrorHandler (async (req, res, next) => {
 
-		console.log(req.body);
-		const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+	req.on("data",  async data => {
+
+		const newData = JSON.parse(data.toString("utf8").split("&"));
+		console.log(newData);
+
+		const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, newData, {
 			new: true, 
 			runValidator: true
 		});
@@ -62,6 +68,7 @@ exports.updateBootcamp = asyncErrorHandler (async (req, res, next) => {
 		} 
 
 		res.status(200).json({ success: true, data: bootcamp });
+	});
 });
 
 // description     	Delete a particular Bootcamp
