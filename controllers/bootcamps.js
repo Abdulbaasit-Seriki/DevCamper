@@ -17,19 +17,9 @@ exports.showAllBootcamps = asyncErrorHandler (async (req, res, next) => {
 // Authorisation	Yes
 exports.createNewBootcamp = asyncErrorHandler (async (req, res, next) => {
 
-	req.on("data",  async data => {
-
-		const parsedBootcamp = JSON.parse(data.toString("utf8").split("&"));
-
-		console.log(parsedBootcamp);
-
-		// Save the bootcamp to the database 
-		const bootcamp = await Bootcamp.create(parsedBootcamp);
-		
-
-		// It is 201 because the data is a resource
-		res.status(201).json({ success: "true", data: bootcamp});
-	});
+	const bootcamp = await Bootcamp.create(req.body);
+	
+	res.status(201).json({ success: "true", data: bootcamp});
 });
 
 // description     	Get one particular Bootcamp
@@ -53,22 +43,12 @@ exports.showBootcamp = asyncErrorHandler (async (req, res, next) => {
 // Authorisation	Yes
 exports.updateBootcamp = asyncErrorHandler (async (req, res, next) => {
 
-	req.on("data",  async data => {
-
-		const newData = JSON.parse(data.toString("utf8").split("&"));
-		console.log(newData);
-
-		const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, newData, {
+	const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
 			new: true, 
 			runValidator: true
 		});
 
-		if (!bootcamp) {
-			return next(new ErrorResponseHandler(`Bootcamp not found with an id of ${req.params.id}`), 404);
-		} 
-
-		res.status(200).json({ success: true, data: bootcamp });
-	});
+	res.status(200).json({ success: true, data: bootcamp });
 });
 
 // description     	Delete a particular Bootcamp

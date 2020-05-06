@@ -101,7 +101,9 @@ BootCampSchema.pre("save", function(next) {
 
 BootCampSchema.pre("save", async function(next) {
 	const loc = await geocoder.geocode(this.address);
-	let newlocation = {
+
+	console.log(loc);
+	this.location = {
 		type: 'Point',
 		coordinates: [loc[0].longitude, loc[0].latitude],
 		formattedAddress: loc[0].formattedAddress,
@@ -111,10 +113,9 @@ BootCampSchema.pre("save", async function(next) {
 		zipcode: loc[0].zipcode,
 		country: loc[0].countryCode
 	};
-	const formatlocation = JSON.stringify(newlocation);
-	this.location = JSON.parse(formatlocation.toString("utf8").split("&"));
-	console.log(this.location);
+
 	// Remove the address field
+	console.log(this.location);
 	this.address = undefined;
 	next();
 });

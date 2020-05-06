@@ -4,7 +4,6 @@ const errorHandler = (err, req, res, next) => {
 	let error = {...err};
 	error.message = err.message;
 
-	// The .red will give it a red color coz I'm using the colors package
 	console.log(err);
 
 	// If the ID of the resource provided is wrong
@@ -31,4 +30,4 @@ const errorHandler = (err, req, res, next) => {
 	});
 };
 
-module.exports = ErrorResponseHandler;
+module.exports = errorHandler;
