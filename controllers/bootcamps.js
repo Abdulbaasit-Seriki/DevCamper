@@ -8,7 +8,38 @@ const geocoder = require('../utils/geocoder.js');
 // Authorisation	No
 exports.showAllBootcamps = asyncErrorHandler (async (req, res, next) => {
 
-	const bootcamps = await Bootcamp.find();
+	// Add filters to the search in form of a query string
+	const requestQuery = {...req.query};
+	let query;
+	const paramsToBeRemoved = ['filter', 'sort'];
+
+	// Delete the specified fields from the query string
+	paramsToBeRemoved.forEach( param => delete requestQuery[param]);
+
+	// Creating queryString
+	let queryString = JSON.stringify(requestQuery);
+
+	// Making query dtring operators like $gt(>) $lt(>) $gte, $lte
+	queryString = queryString.replace(/\b(gt|gte|lt|lte)\b/g, key => `$${key}`)
+
+	query = Bootcamp.find(JSON.parse(queryString));
+
+	// Use the filters to pick the firlds to be displayed
+	if (req.query.filter) {
+		const filters = req.query.filter.split(',').join(' ');
+		query = query.select(filters);
+	}
+
+	// Sort. - represents descending order + ascending order
+	if (req.query.sort) {
+		const sortBy = req.query.sort().split(',').join(' ');
+		query = query.sort(sortBy);
+	}
+	else {
+		query = query.sort(-createdAt); 
+	}
+
+	const bootcamps = await query;
 	res.status(200).json({success: true, count: bootcamps.length, count: bootcamps.length, data: bootcamps}); 
 }); 
 
