@@ -35,20 +35,23 @@ const BootCampSchema = new mongoose.Schema({
 		required: [true, `Please add an address`]
 	},
 	location: {
-		type: String,
-		enum: [`Point`],
-		coordinates: {
-			type: [Number],
-			index: '2dsphere'
-		},
-		formattedAddress: String,
-		street: String,
-		city: String,
-		state: String,
-		zipcode: String,
-		country: String
-	},
-	careers: {
+      // GeoJSON Point
+      type: {
+        type: String,
+        enum: ['Point']
+      },
+      coordinates: {
+        type: [Number],
+        index: '2dsphere'
+      },
+      formattedAddress: String,
+      street: String,
+      city: String,
+      state: String,
+      zipcode: String,
+      country: String
+    },
+    careers: {
 		type: [String],
 		required: true,
 		enum: [
@@ -86,7 +89,7 @@ const BootCampSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false
 	},
-	createdAt: {
+	createdAt: { 
 		type: Date,
 		default: Date.now
 	}
@@ -96,28 +99,25 @@ const BootCampSchema = new mongoose.Schema({
 // This one creates a slug from the name of the bootcamp
 BootCampSchema.pre("save", function(next) {
 	this.slug = slugify(this.name);
-	next();
+	next(); 
 });
 
-BootCampSchema.pre("save", async function(next) {
-	const loc = await geocoder.geocode(this.address);
+BootCampSchema.pre('save', async function(next) {
+  const loc = await geocoder.geocode(this.address);
+  this.location = {
+    type: 'Point',
+    coordinates: [loc[0].longitude, loc[0].latitude],
+    formattedAddress: loc[0].formattedAddress,
+    street: loc[0].streetName,
+    city: loc[0].city,
+    state: loc[0].stateCode,
+    zipcode: loc[0].zipcode,
+    country: loc[0].countryCode 
+  }; 
 
-	console.log(loc);
-	this.location = {
-		type: 'Point',
-		coordinates: [loc[0].longitude, loc[0].latitude],
-		formattedAddress: loc[0].formattedAddress,
-		street: loc[0].streetName,
-		city: loc[0].city,
-		state: loc[0].stateCode,
-		zipcode: loc[0].zipcode,
-		country: loc[0].countryCode
-	};
-
-	// Remove the address field
-	console.log(this.location);
-	this.address = undefined;
-	next();
+  // Do not save address in DB
+  this.address = undefined;
+  next();
 });
 
 module.exports = mongoose.model('BootCamp', BootCampSchema);

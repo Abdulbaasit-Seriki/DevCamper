@@ -14,10 +14,11 @@ dotenv.config({ path: './config/config.env'} );
 
 // Middlewares
 // Body Parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
+// Mount Routers
 app.use('/api/v1/bootcamps', bootcamps);
+
 app.use(errorHandler);
 
 const port = process.env.PORT || 5000;

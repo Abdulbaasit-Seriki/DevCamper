@@ -9,7 +9,7 @@ const geocoder = require('../utils/geocoder.js');
 exports.showAllBootcamps = asyncErrorHandler (async (req, res, next) => {
 
 	const bootcamps = await Bootcamp.find();
-	res.status(200).json({success: true, count: bootcamps.length, data: bootcamps}); 
+	res.status(200).json({success: true, count: bootcamps.length, count: bootcamps.length, data: bootcamps}); 
 }); 
 
 
@@ -25,7 +25,7 @@ exports.createNewBootcamp = asyncErrorHandler (async (req, res, next) => {
 
 // description     	Get one particular Bootcamp
 // route			GET api/v1/bootcamps/:id
-// Authorisation	No
+// Authorisation	No 
 exports.showBootcamp = asyncErrorHandler (async (req, res, next) => {
 
 		console.log(req.params.id);
@@ -73,25 +73,25 @@ exports.deleteBootcamp = asyncErrorHandler (async (req, res, next) => {
 // Authorisation	No
 exports.getBootcampsWithinRadius = asyncErrorHandler (async (req, res, next) => {
 
-	const {zipcode, distance} = req.params;
+	const { zipcode, distance } = req.params;
 
-	// Get the lat and long from the geocoder
-	const loc = await geocoder.geocode(zipcode);
-	const lat = loc[0].latitude;
-	const lng = loc[0].longitude;
+	  // Get lat/lng from geocoder
+	  const loc = await geocoder.geocode(zipcode);
+	  const lat = loc[0].latitude;
+	  const lng = loc[0].longitude;
 
-	// Calc the radius by dividing the distance by radius of the earth in km
-	const radius = distance / 6738;
+	  // Calc radius using radians
+	  // Divide dist by radius of Earth
+	  // Earth Radius = 3,963 mi / 6,378 km
+	  const radius = distance / 3963;
 
-	// Find all bootcamps within the radius
-	const bootcamps = Bootcamp.find({
-		location: { $geoWithin: { $centerSphere: [ [lng, lat], radius ] } }
-	});
+	  const bootcamps = await Bootcamp.find({
+	    location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+	  });
 
-	res.status(200).json({
-		success: true,
-		count: bootcamps.length,
-		data: bootcamps
-	}); 
+	  res.status(200).json({
+	    success: true,
+	    count: bootcamps.length,
+	    data: bootcamps
+	  });
 });
-    
