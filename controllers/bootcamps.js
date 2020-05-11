@@ -11,7 +11,7 @@ exports.showAllBootcamps = asyncErrorHandler (async (req, res, next) => {
 	// Add filters to the search in form of a query string
 	const requestQuery = {...req.query};
 	let query;
-	const paramsToBeRemoved = ['filter', 'sort'];
+	const paramsToBeRemoved = ['filter', 'sort', 'page', 'limit'];
 
 	// Delete the specified fields from the query string
 	paramsToBeRemoved.forEach( param => delete requestQuery[param]);
@@ -32,15 +32,42 @@ exports.showAllBootcamps = asyncErrorHandler (async (req, res, next) => {
 
 	// Sort. - represents descending order + ascending order
 	if (req.query.sort) {
-		const sortBy = req.query.sort().split(',').join(' ');
+		const sortBy = req.query.sort.split(',').join(' ');
 		query = query.sort(sortBy);
 	}
 	else {
-		query = query.sort(-createdAt); 
+		query = query.sort("-createdAt"); 
+	}
+
+	// Pagination
+	const page = parseInt(req.query.page, 10) || 1;
+	const limit = parseInt(req.query.limit, 10) || 25;
+	// To tell mongo how many pages to skip, in this case 0 pages
+	const startIndex = (page - 1) * limit;
+	const endIndex = page * limit;
+	const totalDocuments = await Bootcamp.countDocuments();
+
+
+	query = query.skip(startIndex).limit(limit);
+
+	const pagination = {};
+
+	if (startIndex > 0) {
+		pagination.prev = {
+			page: page - 1,
+			limit
+		}
+	}
+
+	if (endIndex < totalDocuments) {
+		pagination.next = {
+			page: page + 1,
+			limit
+		}
 	}
 
 	const bootcamps = await query;
-	res.status(200).json({success: true, count: bootcamps.length, count: bootcamps.length, data: bootcamps}); 
+	res.status(200).json({success: true, count: bootcamps.length, count: bootcamps.length, pagination, data: bootcamps}); 
 }); 
 
 
