@@ -93,6 +93,9 @@ const BootCampSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	}
+}, {
+	toJSON: { virtuals: true },
+	toObject: { virtuals: true }
 });
 
 // Mongoose Middlewares Also known as hooks
@@ -109,7 +112,7 @@ BootCampSchema.pre('save', async function(next) {
     coordinates: [loc[0].longitude, loc[0].latitude],
     formattedAddress: loc[0].formattedAddress,
     street: loc[0].streetName,
-    city: loc[0].city,
+    city: loc[0].city,  
     state: loc[0].stateCode,
     zipcode: loc[0].zipcode,
     country: loc[0].countryCode 
@@ -119,5 +122,20 @@ BootCampSchema.pre('save', async function(next) {
   this.address = undefined;
   next();
 });
+
+// Cascade delete courses on bootcamp delete
+BootCampSchema.pre('remove', async function(next) {
+	await this.model('Course').deleteMany({ bootcamp: this._id });
+	next();
+})
+
+// Reverse Populate with virtuals, we want to list all of the courses per bootcamp,
+// but it wont be saved to the DB
+BootCampSchema.virtual('courses', { 
+	ref: 'Course',
+	localField: '_id', 
+	foreignField: 'bootcamp',
+	justOne: false 
+})
 
 module.exports = mongoose.model('BootCamp', BootCampSchema);

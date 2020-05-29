@@ -22,7 +22,10 @@ exports.showAllBootcamps = asyncErrorHandler (async (req, res, next) => {
 	// Making query dtring operators like $gt(>) $lt(>) $gte, $lte
 	queryString = queryString.replace(/\b(gt|gte|lt|lte)\b/g, key => `$${key}`)
 
-	query = Bootcamp.find(JSON.parse(queryString));
+	query = Bootcamp.find(JSON.parse(queryString)).populate({
+		path: 'courses',
+		select: 'title description weeks'
+	});
 
 	// Use the filters to pick the firlds to be displayed
 	if (req.query.filter) {
@@ -115,11 +118,13 @@ exports.updateBootcamp = asyncErrorHandler (async (req, res, next) => {
 // Authorisation	Yes
 exports.deleteBootcamp = asyncErrorHandler (async (req, res, next) => {
 
-	const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
+	const bootcamp = await Bootcamp.findById(req.params.id);
 
 	if (!bootcamp) {
 		return next(new ErrorResponseHandler(`Bootcamp not found with an id of ${req.params.id}`), 404);
 	}
+
+	bootcamp.remove();
 
 	res.status(200).json({ success: true, data: {
 		msg: `Bootcamp Successfully Deleted`

@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 // Route Files
 const connectToDB = require('./config/database.js');
 const bootcamps = require('./routes/bootcamps.js');
+const courses = require('./routes/courses.js');
 const errorHandler = require('./middlewares/error.js');
 
 // Load the configs
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Mount Routers
 app.use('/api/v1/bootcamps', bootcamps);
+app.use('/api/v1/courses', courses);
 
 app.use(errorHandler);
 

@@ -33,7 +33,7 @@ const importData = async () => {
 		await Bootcamp.create(bootcamps);
 		await Course.create(courses);
 		console.log(`Data imported successfully`.green.underline.inverse);
-		process.exit();
+		process.exit(); 
 	}
 	catch(err) {
 		console.log(err);
