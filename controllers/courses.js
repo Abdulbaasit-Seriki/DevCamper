@@ -72,12 +72,13 @@ exports.createCourse = asyncErrorHandler(async (req, res, next) => {
 	})
 });
 
+
 // description     	Update Course
 // route			PUT api/v1/courses/:id
 // Authorisation	Yes
 exports.updateCourse = asyncErrorHandler(async (req, res, next) => {
 	
-	let course = await Course.findById(req.params.id);
+	let course = await Course.findById(req.params.id); 
 
 	if (!course) {
 		return next(new ErrorResponseHandler(`Course with id ${req.params.id} couldn't be found`),
